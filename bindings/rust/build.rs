@@ -25,6 +25,7 @@ fn main() {
             wasm_src.join("stdio.c"),
             wasm_src.join("stdlib.c"),
             wasm_src.join("string.c"),
+            wasm_src.join("wctype.c"),
         ]);
     }
 
