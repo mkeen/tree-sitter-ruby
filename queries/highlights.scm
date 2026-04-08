@@ -1,4 +1,4 @@
-; --- Identifiers & Variables ---
+;; --- Identifiers & Variables ---
 (identifier) @variable
 
 ((identifier) @function.method
@@ -9,6 +9,7 @@
   (instance_variable)
 ] @property
 
+;; FIXED: Global variables with proper nesting and simplified regex escaping
 ((global_variable) @variable.builtin
  (#match? @variable.builtin "^\\$(-[ailp]|DEBUG|FILENAME|LOAD_PATH|LOADED_FEATURES|VERBOSE|stderr|stdin|stdout|[!$&'*+,./@\\_`~])$"))
 
@@ -19,7 +20,7 @@
   (super)
 ] @variable.builtin
 
-; --- Keywords ---
+;; --- Keywords ---
 [
   "alias"
   "and"
@@ -53,7 +54,7 @@
 ((identifier) @keyword
  (#match? @keyword "^(private|protected|public)$"))
 
-; --- Constants ---
+;; --- Constants ---
 (constant) @constructor
 
 ((identifier) @constant.builtin
@@ -69,7 +70,7 @@
 ((constant) @constant
  (#match? @constant "^[A-Z\\d_]+$"))
 
-; --- Functions & Methods ---
+;; --- Functions & Methods ---
 "defined?" @function.method.builtin
 
 (call
@@ -83,7 +84,7 @@
 (method name: [(identifier) (constant)] @function.method)
 (singleton_method name: [(identifier) (constant)] @function.method)
 
-; --- Parameters ---
+;; --- Parameters ---
 [
   (block_parameter (identifier))
   (block_parameters (identifier))
@@ -96,7 +97,7 @@
   (optional_parameter name: (identifier))
 ] @variable.parameter
 
-; --- Literals ---
+;; --- Literals ---
 [
   (string)
   (bare_string)
@@ -105,8 +106,14 @@
   (heredoc_beginning)
 ] @string
 
+;; FIXED: Properly nested symbol and character predicates
+((simple_symbol) @string.special.symbol
+ (#match? @string.special.symbol "^:"))
+
+((character) @string.special.symbol
+ (#match? @string.special.symbol "^\\?"))
+
 [
-  (simple_symbol)
   (delimited_symbol)
   (hash_key_symbol)
   (bare_symbol)
@@ -132,7 +139,7 @@
 
 (comment) @comment
 
-; --- Operators & Punctuation ---
+;; --- Operators & Punctuation ---
 [
   "="
   "=>"
