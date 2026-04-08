@@ -1,8 +1,25 @@
+; --- Identifiers & Variables ---
 (identifier) @variable
 
 ((identifier) @function.method
  (#is-not? local))
 
+[
+  (class_variable)
+  (instance_variable)
+] @property
+
+((global_variable) @variable.builtin
+ (#match? @variable.builtin "^\\$(-[ailp]|DEBUG|FILENAME|LOAD_PATH|LOADED_FEATURES|VERBOSE|stderr|stdin|stdout|[!$&'*+,./@\\_`~])$"))
+
+(global_variable) @variable.other
+
+[
+  (self)
+  (super)
+] @variable.builtin
+
+; --- Keywords ---
 [
   "alias"
   "and"
@@ -36,31 +53,8 @@
 ((identifier) @keyword
  (#match? @keyword "^(private|protected|public)$"))
 
+; --- Constants ---
 (constant) @constructor
-
-; Function calls
-
-"defined?" @function.method.builtin
-
-(call
-  method: [(identifier) (constant)] @function.method)
-
-((identifier) @function.method.builtin
- (#eq? @function.method.builtin "require"))
-
-; Function definitions
-
-(alias (identifier) @function.method)
-(setter (identifier) @function.method)
-(method name: [(identifier) (constant)] @function.method)
-(singleton_method name: [(identifier) (constant)] @function.method)
-
-; Identifiers
-
-[
-  (class_variable)
-  (instance_variable)
-] @property
 
 ((identifier) @constant.builtin
  (#match? @constant.builtin "^__(FILE|LINE|ENCODING)__$"))
@@ -75,24 +69,34 @@
 ((constant) @constant
  (#match? @constant "^[A-Z\\d_]+$"))
 
+; --- Functions & Methods ---
+"defined?" @function.method.builtin
+
+(call
+  method: [(identifier) (constant)] @function.method)
+
+((identifier) @function.method.builtin
+ (#eq? @function.method.builtin "require"))
+
+(alias (identifier) @function.method)
+(setter (identifier) @function.method)
+(method name: [(identifier) (constant)] @function.method)
+(singleton_method name: [(identifier) (constant)] @function.method)
+
+; --- Parameters ---
 [
-  (self)
-  (super)
-] @variable.builtin
+  (block_parameter (identifier))
+  (block_parameters (identifier))
+  (destructured_parameter (identifier))
+  (hash_splat_parameter (identifier))
+  (lambda_parameters (identifier))
+  (method_parameters (identifier))
+  (splat_parameter (identifier))
+  (keyword_parameter name: (identifier))
+  (optional_parameter name: (identifier))
+] @variable.parameter
 
-(block_parameter (identifier) @variable.parameter)
-(block_parameters (identifier) @variable.parameter)
-(destructured_parameter (identifier) @variable.parameter)
-(hash_splat_parameter (identifier) @variable.parameter)
-(lambda_parameters (identifier) @variable.parameter)
-(method_parameters (identifier) @variable.parameter)
-(splat_parameter (identifier) @variable.parameter)
-
-(keyword_parameter name: (identifier) @variable.parameter)
-(optional_parameter name: (identifier) @variable.parameter)
-
-; Literals
-
+; --- Literals ---
 [
   (string)
   (bare_string)
@@ -128,12 +132,27 @@
 
 (comment) @comment
 
-; Operators
-
+; --- Operators & Punctuation ---
 [
-"="
-"=>"
-"->"
+  "="
+  "=>"
+  "->"
+  "!"
+  "?"
+  "+"
+  "-"
+  "*"
+  "/"
+  "%"
+  "**"
+  "=="
+  "!="
+  ">"
+  "<"
+  ">="
+  "<="
+  "&&"
+  "||"
 ] @operator
 
 [
